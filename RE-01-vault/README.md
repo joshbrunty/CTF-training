@@ -146,62 +146,28 @@ Work through these phases in order. **Do not skip ahead** — each phase builds 
    - XOR each byte with the key.
    - The result is your flag.
 
-**Decoding the flag — Python script**
+<details>
+<summary>Hint — Decode Script (only open after you've found the key and bytes yourself)</summary>
 
-Create a file called `decode.py` using nano:
+Create a file called `decode.py`:
 ```bash
 nano decode.py
 ```
 
-Type the following into the file — do not include `python3 -c`, just the code itself:
 ```python
-# RE-01: Vault — XOR Decoder
-#
-# Where did these values come from?
-#
-# KEY (0x42):
-#   Found in objdump -d vault:
-#     401266:  mov  $0x42,%ecx   <-- this is the key
-#     401270:  call 4011d6 <xor_decode>
-#   Confirmed in Ghidra as the 4th argument:
-#     xor_decode(local_68, &local_28, 0x19, 0x42)
-#
-# ENCODED BYTES:
-#   Found in objdump -d vault as movabs instructions:
-#     40120e: movabs $0x3026732a2539170f,%rax  -> 0f 17 39 25 2a 73 26 30
-#     401218: movabs $0x37723b1d31731d23,%rdx  -> 23 1d 73 31 1d 3b 72 37
-#     401232: movabs $0x3037723b1d31731d,%rax  -> 1d 73 31 1d 3b 72 37 30
-#     40123c: movabs $0x3f262c717330241d,%rdx  -> 1d 24 30 73 71 2c 26 3f
-
-enc = [0x0f, 0x17, 0x39, 0x25, 0x2a, 0x73, 0x26, 0x30,
-       0x23, 0x1d, 0x73, 0x31, 0x1d, 0x3b, 0x72, 0x37,
-       0x30, 0x1d, 0x24, 0x30, 0x73, 0x71, 0x2c, 0x26, 0x3f]
-
+enc = [0x0f,0x17,0x39,0x25,0x2a,0x73,0x26,0x30,
+       0x23,0x1d,0x73,0x31,0x1d,0x3b,0x72,0x37,
+       0x30,0x1d,0x24,0x30,0x73,0x71,0x2c,0x26,0x3f]
 key = 0x42
-
-# XOR math breakdown:
-# Each encoded byte XOR'd with the key produces the original ASCII character.
-# Example:
-#   0x0f ^ 0x42 = 0x4d = 77  = 'M'
-#   0x17 ^ 0x42 = 0x55 = 85  = 'U'
-#   0x39 ^ 0x42 = 0x7b = 123 = '{'
-#   ... and so on for each byte
-
-print("Byte-by-byte breakdown:")
-print(f"{'Encoded':<10} {'Key':<8} {'Result (hex)':<14} {'Result (dec)':<14} {'Character'}")
-print("-" * 60)
-for b in enc:
-    result = b ^ key
-    print(f"0x{b:02x}      ^ 0x{key:02x}  = 0x{result:02x}          = {result:<14} = '{chr(result)}'")
-
-flag = ''.join(chr(b ^ key) for b in enc)
-print(f"\nFlag: {flag}")
+print(''.join(chr(b ^ key) for b in enc))
 ```
 
-Save with `Ctrl+O` → Enter → `Ctrl+X`, then run it:
+Save with `Ctrl+O` → Enter → `Ctrl+X`, then run:
 ```bash
 python3 decode.py
 ```
+
+</details>
 
 ---
 
@@ -236,6 +202,46 @@ In `objdump -d vault`, search for the call to `xor_decode`. Right before the cal
 
 In Ghidra's decompiler view of `xor_decode`, look for the `^` operator — that's XOR. The fourth parameter (`param_4`) is the key, and the second (`param_2`) is the encoded byte array. In `main`, find the call to `xor_decode` and look at what's passed as `param_4` — that's your key. Collect the encoded bytes, XOR each one with the key, and convert to ASCII.
 
+Here is how the math works. For each encoded byte, XOR it with the key to get its ASCII value, then look up the character:
+
+```
+Encoded byte   ^   Key     =   ASCII (hex)   =   ASCII (dec)   =   Character
+-----------------------------------------------------------------------------
+0x0f           ^   0x42   =   0x4d           =   77            =   'M'
+0x17           ^   0x42   =   0x55           =   85            =   'U'
+0x39           ^   0x42   =   0x7b           =   123           =   '{'
+```
+
+Continue the same operation for all 25 bytes and the characters concatenated together form the flag.
+
+</details>
+
+<details>
+<summary>Hint 4 — The XOR math explained</summary>
+
+The encoded bytes were produced by taking each character of the original flag, looking up its ASCII value, and XORing it with the key `0x42`. Here is how the first three bytes were computed:
+
+```
+Flag char   ASCII (hex)   Key      Encoded byte
+-------------------------------------------------
+'M'       = 0x4d        ^ 0x42  = 0x0f
+'U'       = 0x55        ^ 0x42  = 0x17
+'{'       = 0x7b        ^ 0x42  = 0x39
+```
+
+Those encoded bytes — `0x0f, 0x17, 0x39` — are exactly what got baked into the binary and what you see in the `movabs` instructions in `objdump`.
+
+To decode, XOR each encoded byte with the same key and you get the original ASCII value back:
+
+```
+0x0f ^ 0x42 = 0x4d = 'M'
+0x17 ^ 0x42 = 0x55 = 'U'
+0x39 ^ 0x42 = 0x7b = '{'
+... and so on for all 25 bytes
+```
+
+This works because XOR is its own inverse — if `A ^ B = C`, then `C ^ B = A`.
+
 </details>
 
 ---
@@ -251,7 +257,5 @@ In Ghidra's decompiler view of `xor_decode`, look for the `^` operator — that'
 
 ---
 
-*Marshall University Cyber Team | Reverse Engineering Training Series*  
 *Prepared by Coach Josh Brunty
 *Contact: [josh.brunty@marshall.edu](mailto:josh.brunty@marshall.edu) | [coachbrunty@uscybergames.org](mailto:coachbrunty@uscybergames.org)*
-
