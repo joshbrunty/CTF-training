@@ -1,5 +1,5 @@
 # RE-01: Vault
-**Category:** Reverse Engineering | **Difficulty:** Beginner | **Points:** 100
+**Category:** Reverse Engineering | **Difficulty:** Beginner
 
 ## Reverse Engineering 101
 
