@@ -8,7 +8,7 @@ A growing collection of hands-on CTF training challenges and walkthroughs built 
 
 | # | Category | Challenge | Difficulty | Topics |
 |---|---|---|---|---|
-| RE-01 | Reverse Engineering | [Vault](./RE-01-vault/) | Beginner | Static analysis, disassembly, Ghidra, XOR encoding |
+| RE-01 | Reverse Engineering | [Vault](./RE-01-vault/RE-01-vault.md) | Beginner | Static analysis, disassembly, Ghidra, XOR encoding |
 
 *More challenges added regularly. Check back often.*
 
