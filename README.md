@@ -1,5 +1,4 @@
 ## CTF Training
-
 A growing collection of hands-on CTF training challenges and walkthroughs built for the MU Cyber Team in preparation for the [National Cyber League (NCL)](https://nationalcyberleague.org), [US Cyber Games](https://www.uscybergames.com), and other competitions. Challenges are designed to build real, competition-ready skills — the same techniques you'll use on game day and on the job.
 
 ---
@@ -8,7 +7,7 @@ A growing collection of hands-on CTF training challenges and walkthroughs built 
 
 | # | Category | Challenge | Difficulty | Topics |
 |---|---|---|---|---|
-| RE-01 | Reverse Engineering | [Vault](./RE-01-vault/vault) | Beginner | Static analysis, disassembly, Ghidra, XOR encoding |
+| RE-01 | Reverse Engineering | [Vault](./RE-01-vault/) | Beginner | Static analysis, disassembly, Ghidra, XOR encoding |
 
 *More challenges added regularly. Check back often.*
 
