@@ -1,5 +1,5 @@
 # RE-01: Vault
-**Category:** Reverse Engineering | **Difficulty:** Beginner | **Points:** 100 | **Flag Format:** `MU{...}`
+**Category:** Reverse Engineering | **Difficulty:** Beginner | **Flag Format:** `MU{...}`
 
 ---
 
@@ -58,6 +58,14 @@ Work through these phases in order. **Do not skip ahead** — each phase builds 
    - What function names or library calls can you spot?
 
 3. Run `strings vault | grep -i "flag\|MU{\|password\|secret"` — what do you find?
+
+   You should see something like:
+   ```
+   [-] Access Denied. Wrong password.
+   Enter the vault password:
+   [+] Flag: %s
+   ```
+   On Kali, `grep` will highlight the matched terms in red — that's normal. Notice that `MU{` returns no match. What does that tell you about the flag?
 
 **Answer these before moving on:**
 - [ ] What is the binary type and architecture?
@@ -138,13 +146,61 @@ Work through these phases in order. **Do not skip ahead** — each phase builds 
    - XOR each byte with the key.
    - The result is your flag.
 
-**You can decode the bytes using Python in your terminal:**
+**Decoding the flag — Python script**
+
+Create a file called `decode.py` using nano:
+```bash
+nano decode.py
+```
+
+Type the following into the file — do not include `python3 -c`, just the code itself:
 ```python
-python3 -c "
-enc = [/* paste your hex bytes here, comma-separated */]
-key = 0x??  # fill in the key you found from Ghidra
-print(''.join(chr(b ^ key) for b in enc))
-"
+# RE-01: Vault — XOR Decoder
+#
+# Where did these values come from?
+#
+# KEY (0x42):
+#   Found in objdump -d vault:
+#     401266:  mov  $0x42,%ecx   <-- this is the key
+#     401270:  call 4011d6 <xor_decode>
+#   Confirmed in Ghidra as the 4th argument:
+#     xor_decode(local_68, &local_28, 0x19, 0x42)
+#
+# ENCODED BYTES:
+#   Found in objdump -d vault as movabs instructions:
+#     40120e: movabs $0x3026732a2539170f,%rax  -> 0f 17 39 25 2a 73 26 30
+#     401218: movabs $0x37723b1d31731d23,%rdx  -> 23 1d 73 31 1d 3b 72 37
+#     401232: movabs $0x3037723b1d31731d,%rax  -> 1d 73 31 1d 3b 72 37 30
+#     40123c: movabs $0x3f262c717330241d,%rdx  -> 1d 24 30 73 71 2c 26 3f
+
+enc = [0x0f, 0x17, 0x39, 0x25, 0x2a, 0x73, 0x26, 0x30,
+       0x23, 0x1d, 0x73, 0x31, 0x1d, 0x3b, 0x72, 0x37,
+       0x30, 0x1d, 0x24, 0x30, 0x73, 0x71, 0x2c, 0x26, 0x3f]
+
+key = 0x42
+
+# XOR math breakdown:
+# Each encoded byte XOR'd with the key produces the original ASCII character.
+# Example:
+#   0x0f ^ 0x42 = 0x4d = 77  = 'M'
+#   0x17 ^ 0x42 = 0x55 = 85  = 'U'
+#   0x39 ^ 0x42 = 0x7b = 123 = '{'
+#   ... and so on for each byte
+
+print("Byte-by-byte breakdown:")
+print(f"{'Encoded':<10} {'Key':<8} {'Result (hex)':<14} {'Result (dec)':<14} {'Character'}")
+print("-" * 60)
+for b in enc:
+    result = b ^ key
+    print(f"0x{b:02x}      ^ 0x{key:02x}  = 0x{result:02x}          = {result:<14} = '{chr(result)}'")
+
+flag = ''.join(chr(b ^ key) for b in enc)
+print(f"\nFlag: {flag}")
+```
+
+Save with `Ctrl+O` → Enter → `Ctrl+X`, then run it:
+```bash
+python3 decode.py
 ```
 
 ---
@@ -196,6 +252,6 @@ In Ghidra's decompiler view of `xor_decode`, look for the `^` operator — that'
 ---
 
 *Marshall University Cyber Team | Reverse Engineering Training Series*  
-*Prepared by Coach Josh Brunty  
+*Prepared by Coach Josh Brunty
 *Contact: [josh.brunty@marshall.edu](mailto:josh.brunty@marshall.edu) | [coachbrunty@uscybergames.org](mailto:coachbrunty@uscybergames.org)*
 
