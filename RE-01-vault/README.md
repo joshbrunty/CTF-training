@@ -1,5 +1,5 @@
 # RE-01: Vault
-**Category:** Reverse Engineering | **Difficulty:** Beginner | **Flag Format:** `MU{...}`
+**Category:** Reverse Engineering | **Difficulty:** Beginner | **Points:** 100 | **Flag Format:** `MU{...}`
 
 ---
 
@@ -33,17 +33,6 @@ You have access to the following tools on Kali Linux:
 | `strings` | Extract printable strings from the binary |
 | `objdump` | Disassemble the binary and inspect sections |
 | **Ghidra** | Full decompilation and static analysis |
-
-**Installing Ghidra on Kali Linux:**
-
-Ghidra is available directly from the Kali package manager. Run the following commands to install it:
-
-```bash
-sudo apt update
-sudo apt install ghidra -y
-```
-
-Once installed, launch it from the terminal with `ghidra` or find it in your applications menu.
 
 ---
 
@@ -115,10 +104,15 @@ Work through these phases in order. **Do not skip ahead** — each phase builds 
 **Goal:** Decompile the binary and fully understand the flag-hiding mechanism.
 
 **Setup:**
-1. Open Ghidra and create a new project.
-2. Import `vault` (`File → Import File`). Accept defaults and click OK.
-3. Double-click `vault` in the project window to open the Code Browser.
-4. When prompted to analyze, click **Yes** and accept defaults. Wait for analysis to complete.
+1. If Ghidra is not yet installed, run:
+   ```bash
+   sudo apt update
+   sudo apt install ghidra -y
+   ```
+2. Open Ghidra and create a new project.
+3. Import `vault` (`File → Import File`). Accept defaults and click OK.
+4. Double-click `vault` in the project window to open the Code Browser.
+5. When prompted to analyze, click **Yes** and accept defaults. Wait for analysis to complete.
 
 **Tasks:**
 
@@ -202,4 +196,6 @@ In Ghidra's decompiler view of `xor_decode`, look for the `^` operator — that'
 ---
 
 *Marshall University Cyber Team | Reverse Engineering Training Series*  
-*Prepared by Coach Josh Brunty
+*Prepared by Coach Josh Brunty  
+*Contact: [josh.brunty@marshall.edu](mailto:josh.brunty@marshall.edu) | [coachbrunty@uscybergames.org](mailto:coachbrunty@uscybergames.org)*
+
