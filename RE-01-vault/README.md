@@ -1,8 +1,5 @@
-# MU Cyber Team — CTF Challenge
-## *Reverse Engineering | "Vault"*
-**Difficulty:** Beginner  
-**Category:** Reverse Engineering  
-**Flag Format:** `MU{...}`
+# RE-01: Vault
+**Category:** Reverse Engineering | **Difficulty:** Beginner | **Points:** 100 | **Flag Format:** `MU{...}`
 
 ---
 
@@ -36,6 +33,17 @@ You have access to the following tools on Kali Linux:
 | `strings` | Extract printable strings from the binary |
 | `objdump` | Disassemble the binary and inspect sections |
 | **Ghidra** | Full decompilation and static analysis |
+
+**Installing Ghidra on Kali Linux:**
+
+Ghidra is available directly from the Kali package manager. Run the following commands to install it:
+
+```bash
+sudo apt update
+sudo apt install ghidra -y
+```
+
+Once installed, launch it from the terminal with `ghidra` or find it in your applications menu.
 
 ---
 
