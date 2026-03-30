@@ -1,10 +1,10 @@
 ## CTF Training
 
-A growing collection of hands-on CTF training challenges and walkthroughs built for the MU Cyber Team in preparation for the [National Cyber League (NCL)](https://nationalcyberleague.org), [US Cyber Games](https://www.uscybergames.com), and other competitions. Challenges are designed to build real, competition-ready skills — the same techniques you'll use on game day and on the job.
+A growing collection of hands-on CTF training challenges and walkthroughs built for the Marshall University Cyber Team in preparation for the [National Cyber League (NCL)](https://nationalcyberleague.org), [US Cyber Games](https://www.uscybergames.com), and other competitions. Challenges are designed to build real, competition-ready skills — the same techniques you'll use on game day and on the job.
 
 ---
 
-## 📁 Challenge Index
+## Challenge Index
 
 | # | Category | Challenge | Difficulty | Topics |
 |---|---|---|---|---|
