@@ -1,6 +1,6 @@
 ## CTF Training
 
-A growing collection of hands-on CTF training challenges and walkthroughs built for the Marshall University Cyber Team in preparation for the [National Cyber League (NCL)](https://nationalcyberleague.org), [US Cyber Games](https://www.uscybergames.com), and other competitions. Challenges are designed to build real, competition-ready skills — the same techniques you'll use on game day and on the job.
+A growing collection of hands-on CTF training challenges and walkthroughs built for the MU Cyber Team in preparation for the [National Cyber League (NCL)](https://nationalcyberleague.org), [US Cyber Games](https://www.uscybergames.com), and other competitions. Challenges are designed to build real, competition-ready skills — the same techniques you'll use on game day and on the job.
 
 ---
 
@@ -8,7 +8,7 @@ A growing collection of hands-on CTF training challenges and walkthroughs built 
 
 | # | Category | Challenge | Difficulty | Topics |
 |---|---|---|---|---|
-| RE-01 | Reverse Engineering | [Vault](./RE-01-vault/README.md) | Beginner | Static analysis, disassembly, Ghidra, XOR encoding |
+| RE-01 | Reverse Engineering | [Vault](./RE-01-vault/vault) | Beginner | Static analysis, disassembly, Ghidra, XOR encoding |
 
 *More challenges added regularly. Check back often.*
 
@@ -41,11 +41,10 @@ All challenges in this repo use the format: **`MU{...}`**
 
 ```
 CTF-training/
-├── RE-01-vault/
-│   ├── README.md            ← Challenge description & Reverse Engineering 101 overview
-│   ├── vault                ← Challenge binary (ELF 64-bit x86-64)
-│   └── MU_RE_Challenge_Vault.md   ← Student worksheet
-└── ...
+├── README.md
+└── RE-01-vault/
+    ├── README.md        ← challenge description & full worksheet
+    └── vault            ← challenge binary (ELF 64-bit x86-64)
 ```
 
 Instructor solution guides and source files are maintained in a separate private repository. If you are an instructor and need access, contact [josh.brunty@marshall.edu](mailto:josh.brunty@marshall.edu).
