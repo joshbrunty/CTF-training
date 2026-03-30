@@ -1,5 +1,4 @@
- CTF Training
-**Marshall University Cyber Team**
+## CTF Training
 
 A growing collection of hands-on CTF training challenges and walkthroughs built for the MU Cyber Team in preparation for the [National Cyber League (NCL)](https://nationalcyberleague.org), [US Cyber Games](https://www.uscybergames.com), and other competitions. Challenges are designed to build real, competition-ready skills — the same techniques you'll use on game day and on the job.
 
@@ -15,7 +14,7 @@ A growing collection of hands-on CTF training challenges and walkthroughs built 
 
 ---
 
-## 🧰 Tools & Environment
+## Tools & Environment
 
 Most challenges are designed for **Kali Linux** and make use of standard tools including:
 
@@ -32,13 +31,13 @@ Most challenges are designed for **Kali Linux** and make use of standard tools i
 
 ---
 
-## 🚩 Flag Format
+## Flag Format
 
 All challenges in this repo use the format: **`MU{...}`**
 
 ---
 
-## 📂 Repo Structure
+## Repo Structure
 
 ```
 CTF-training/
@@ -53,12 +52,12 @@ Instructor solution guides and source files are maintained in a separate private
 
 ---
 
-## 📖 About This Series
+## About This Series
 
 These challenges were developed by **Dr. Josh Brunty**, Professor of Cyber Forensics & Security and Head Coach of the [US Cyber Team](https://www.uscyberteam.com) at [Marshall University](https://www.marshall.edu/cyber). They are intended to bridge the gap between classroom knowledge and competition performance — with a focus on techniques that apply equally in real-world digital forensics and incident response work.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Have a challenge idea or want to contribute a walkthrough? Open an issue or reach out directly.
