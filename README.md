@@ -1,7 +1,6 @@
 ## CTF Training
 A growing collection of hands-on CTF training challenges and walkthroughs built for the MU Cyber Team in preparation for the [National Cyber League (NCL)](https://nationalcyberleague.org), [US Cyber Games](https://www.uscybergames.com), and other competitions. Challenges are designed to build real, competition-ready skills — the same techniques you'll use on game day and on the job.
 
-
 ---
 
 ## Challenge Index
@@ -43,6 +42,8 @@ All challenges in this repo use the format: **`MU{...}`**
 ```
 CTF-training/
 ├── README.md
+└── Intro/
+    ├── README.md        ← Intro to CTFs
 └── RE-01-vault/
     ├── README.md        ← challenge description & full worksheet
     └── vault            ← challenge binary (ELF 64-bit x86-64)
@@ -54,7 +55,7 @@ Instructor solution guides and source files are maintained in a separate private
 
 ## About This Series
 
-These challenges were developed by **Dr. Josh Brunty**, Professor of Cyber Forensics & Security and Head Coach of the [US Cyber Team](https://www.uscyberteam.com) at [Marshall University](https://www.marshall.edu/cyber). They are intended to bridge the gap between classroom knowledge and competition performance — with a focus on techniques that apply equally in real-world digital forensics and incident response work.
+These challenges were developed by **Dr. Josh Brunty**, Professor of Cyber Forensics & Security at [Marshall University](https://www.marshall.edu/cyber)and Head Coach of the [US Cyber Team](https://www.uscyberteam.com). They are intended to bridge the gap between classroom knowledge and competition performance — with a focus on techniques that apply equally in real-world digital forensics and incident response work.
 
 ---
 
