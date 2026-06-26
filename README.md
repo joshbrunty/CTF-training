@@ -8,7 +8,7 @@ A growing collection of hands-on CTF training challenges and walkthroughs built 
 
 | # | Category | Challenge | Difficulty | Topics |
 |---|---|---|---|---|
-| Intro | Introduction to CTFs | [Intro]./Intro/readme.md/) | Beginner | Introuction to CTFs, formats, encoding,etc. (start here) |
+| Intro | Introduction to CTFs | [Intro](./Intro/readme.md/) | Beginner | Introuction to CTFs, formats, encoding,etc. (start here) |
 | RE-01 | Reverse Engineering | [Vault](./RE-01-vault/) | Beginner | Static analysis, disassembly, Ghidra, XOR encoding |
 
 *More challenges added regularly. Check back often.*
