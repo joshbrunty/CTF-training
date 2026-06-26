@@ -240,4 +240,4 @@ This one has **two layers**. Peel the outer encoding first — the result *looks
 
 ---
 
-*CTF Training Series · Day 1 of 10*
+*CTF Training Series*
