@@ -1,7 +1,111 @@
-# RE-01: Vault
-**Category:** Reverse Engineering | **Difficulty:** Beginner | **Flag Format:** `CTF{...}`
+# Reverse Engineering Basics — Taking a Binary Apart
+
+**CTF Training Series** · **Flag format:** `CTF{...}`
+**Level:** Intermediate-friendly — this builds on the `file`/`strings` habits from the Linux session and the XOR idea from Crypto.
+
+> This single README is both the **lesson** and the **lab**. Read the concepts in Part 1, then work the **Vault** challenge in Part 2. Its flag isn't printed here — that's the point. Work inside your Kali VM, and **never run an unknown binary outside a VM.**
 
 ---
+
+## Learning Objectives
+
+By the end of this session, you will be able to:
+
+1. Explain what reverse engineering is and the difference between **static** and **dynamic** analysis.
+2. Recon a binary with `file` and `strings`, and explain why encoded data won't show up in `strings`.
+3. Read disassembly with `objdump` — locate functions, calls, and key constants.
+4. Decompile with **Ghidra** and read the pseudocode despite stripped variable names.
+5. Recognize **XOR encoding** as obfuscation and recover the hidden data.
+6. Apply the RE workflow: **recon → disassemble → decompile → recover.**
+
+---
+
+# Part 1 — The Lesson
+
+## What Is Reverse Engineering?
+
+Reverse engineering (RE) is figuring out what a compiled program does **without** the source code. You're handed machine code and have to work backward to its logic.
+
+- **Static analysis** — examining the binary *without running it* (`file`, `strings`, `objdump`, Ghidra). Safe, and where you start.
+- **Dynamic analysis** — *running* it under observation (a debugger like `gdb`, or a sandbox). Powerful, but only ever inside an isolated VM.
+
+> **Safety first:** a CTF binary is usually friendly, but the habit matters — analyze unknown files statically, in a VM, before you ever execute them. In the real world that binary could be malware.
+
+---
+
+## From Source to Binary
+
+When a developer compiles a program, readable source becomes CPU instructions:
+
+```
+source code  →  [compiler]  →  machine code (the binary)
+```
+
+RE walks that backward — but you don't get the source back. Two things make it harder, and both are normal:
+
+- **No comments or original names.** The compiler throws them away.
+- **Stripped symbols.** Many binaries remove function and variable names entirely, so a decompiler invents generic ones like `param_1`, `local_28`, `FUN_004011d6`. Your job is to read the *logic*, not rely on names.
+
+A binary that *keeps* a meaningful function name (say, `xor_decode`) is handing you a breadcrumb — follow it.
+
+---
+
+## The Three-Phase Approach
+
+Most beginner RE challenges fall to the same escalating sequence. Use the cheapest tool that answers your question, and only escalate when you need to.
+
+1. **Recon** — `file` and `strings`. What is this, and what's sitting in plain sight?
+2. **Disassemble** — `objdump`. Read the raw assembly to find the interesting function and the constants it uses.
+3. **Decompile** — Ghidra. Turn the assembly into C-like pseudocode you can actually reason about.
+
+**Recon** tells you the architecture and surfaces embedded text — banners, prompts, and especially **function names**. If a flag *doesn't* appear in `strings`, that absence is itself a clue: it's probably encoded, because encoded bytes aren't printable.
+
+**Disassembly** (`objdump -d`) lets you find `main`, spot a `call` to a non-library function (library calls end in `@plt`), and read the constant loaded just before that call — often a key, a length, or a flag.
+
+**Decompilation** (Ghidra) turns machine code into readable pseudocode. Expect generic names; hunt for the operator that matters. A `^` is XOR, and a loop doing `*(out + i) = key ^ *(enc + i)` is a decode routine — the byte it XORs with is the key.
+
+---
+
+## Spotting Obfuscation: XOR
+
+The most common "hidden flag" trick in beginner RE is exactly the XOR you met in the Crypto session — now living *inside a binary*.
+
+- The flag is stored **XOR-encoded** so `strings` shows nothing readable.
+- A small routine decodes it at runtime by XORing each byte with a **key**.
+- That key is almost always **right there in the binary** — a constant loaded just before the decode call, visible in both `objdump` and Ghidra.
+
+Recover the encoded bytes + the key, XOR them together (a five-line Python script), and you have the flag. XOR is its own inverse, so decoding is the same operation as encoding.
+
+---
+
+## The RE Workflow
+
+1. **Recon** — `file` + `strings`; note what's present and what's suspiciously absent.
+2. **Disassemble** — `objdump`; find the interesting function and the constants near its call.
+3. **Decompile** — Ghidra; read the logic, identify the scheme (e.g. XOR + key).
+4. **Recover** — pull the bytes and key, decode, and submit the `CTF{...}` flag.
+5. **Note** — record the breadcrumb that cracked it; that's your write-up.
+
+---
+
+## Your Toolkit
+
+| Tool | Purpose |
+|---|---|
+| `file` | Identify type, architecture, stripped-or-not |
+| `strings` | Printable text, function names, breadcrumbs |
+| `objdump -d` | Disassembly; find calls and constants |
+| **Ghidra** | Full decompilation to readable pseudocode |
+| `gdb` | Dynamic analysis when static isn't enough (a later topic) |
+| `python3` | A few lines to XOR-decode recovered bytes |
+
+> On Kali, install Ghidra with `sudo apt install ghidra -y`. See the ARM-Mac note in Phase 2 if `objdump` won't read the binary.
+
+---
+
+# Part 2 — The Lab: RE-01 Vault
+
+**Category:** Reverse Engineering · **Difficulty:** Beginner · **Flag Format:** `CTF{...}`
 
 ## Challenge Description
 
@@ -13,50 +117,29 @@ The binary is named `vault`. It runs on Linux (64-bit).
 
 > *"The answer is already inside..."*
 
----
-
 ## Files Provided
 
 | File | Description |
 |---|---|
 | [`vault`](./vault) | The challenge binary (ELF 64-bit, Linux x86-64) |
 
----
-
-## Recommended Tools
-
-You have access to the following tools on Kali Linux:
-
-| Tool | Purpose |
-|---|---|
-| `file` | Identify the binary type and architecture |
-| `strings` | Extract printable strings from the binary |
-| `objdump` | Disassemble the binary and inspect sections |
-| **Ghidra** | Full decompilation and static analysis |
+> After downloading, make it runnable: `chmod +x vault`. (You don't actually need to *run* it to solve it — static analysis first.)
 
 ---
 
-## Challenge Roadmap
+## Roadmap
 
 Work through these phases in order. **Do not skip ahead** — each phase builds intuition you'll need for the next.
-
----
 
 ### Phase 1 — Reconnaissance (`file` + `strings`)
 
 **Goal:** Understand what you're working with and gather initial intel.
 
-**Tasks:**
-
 1. Run `file vault` and record what you observe.
-   - What type of binary is this?
-   - What architecture is it compiled for?
-
+   - What type of binary is this? What architecture is it compiled for?
 2. Run `strings vault` and scroll through the output.
-   - Do you see any interesting messages?
-   - Does the flag appear directly? Why or why not?
+   - Any interesting messages? Does the flag appear directly? Why or why not?
    - What function names or library calls can you spot?
-
 3. Run `strings vault | grep -i "flag\|CTF{\|password\|secret"` — what do you find?
 
    You should see something like:
@@ -65,7 +148,7 @@ Work through these phases in order. **Do not skip ahead** — each phase builds 
    Enter the vault password:
    [+] Flag: %s
    ```
-   On Kali, `grep` will highlight the matched terms in red — that's normal. Notice that `CTF{` returns no match. What does that tell you about the flag?
+   On Kali, `grep` highlights the matched terms in red — that's normal. Notice that `CTF{` returns **no match**. What does that tell you about the flag?
 
 **Answer these before moving on:**
 - [ ] What is the binary type and architecture?
@@ -73,87 +156,59 @@ Work through these phases in order. **Do not skip ahead** — each phase builds 
 - [ ] What hint message is embedded in the binary?
 - [ ] What suspicious function name(s) do you see in `strings` output?
 
----
-
 ### Phase 2 — Disassembly (`objdump`)
 
 **Goal:** Inspect the raw assembly to understand program flow.
 
-> **ARM Kali users (Apple Silicon Mac):** If `objdump -d vault` returns `can't disassemble for architecture UNKNOWN`, your Kali install is running on ARM64 and the default `objdump` can't read x86-64 binaries. Fix it with one command:
+> **ARM Kali users (Apple Silicon Mac):** If `objdump -d vault` returns `can't disassemble for architecture UNKNOWN`, your Kali is running on ARM64 and the default `objdump` can't read x86-64 binaries. Fix it:
 > ```bash
 > sudo apt install binutils-x86-64-linux-gnu
 > x86_64-linux-gnu-objdump -d vault
 > ```
-> Use `x86_64-linux-gnu-objdump` in place of `objdump` for the rest of Phase 2. Ghidra (Phase 3) is unaffected — it handles x86-64 on any host platform.
-
-**Tasks:**
+> Use `x86_64-linux-gnu-objdump` in place of `objdump` for the rest of Phase 2. Ghidra (Phase 3) is unaffected.
 
 1. Run `objdump -d vault` to disassemble all functions.
-   - Locate the `main` function.
-   - Locate any other interesting function(s) — what does the name suggest?
-
-2. Look at the assembly carefully:
-   - What library functions are called? (Hint: look for `call` instructions referencing `@plt`)
-   - Find the instruction that loads a single-byte constant into a register just before calling the suspicious function. What is that value (in hex)?
-
+   - Locate `main`. Locate any other interesting function — what does the name suggest?
+2. Read the assembly:
+   - What library functions are called? (Look for `call` instructions referencing `@plt`.)
+   - Find the instruction that loads a single-byte constant into a register **just before** calling the suspicious function. What is that value (in hex)?
 3. Run `objdump -s -j .rodata vault` to inspect the read-only data section.
-   - What strings do you find there?
-   - Do you see any sequences of non-printable bytes? Note them down.
+   - What strings are there? Any sequences of non-printable bytes? Note them.
 
 **Answer these before moving on:**
 - [ ] What is the name of the suspicious non-standard function you found?
 - [ ] What hex value is loaded just before that function is called?
 - [ ] Can you identify what that function might be doing based on its name?
 
----
-
 ### Phase 3 — Deep Analysis (Ghidra)
 
 **Goal:** Decompile the binary and fully understand the flag-hiding mechanism.
 
 **Setup:**
-1. If Ghidra is not yet installed, run:
-   ```bash
-   sudo apt update
-   sudo apt install ghidra -y
-   ```
-2. Open Ghidra and create a new project.
-3. Import `vault` (`File → Import File`). Accept defaults and click OK.
-4. Double-click `vault` in the project window to open the Code Browser.
-5. When prompted to analyze, click **Yes** and accept defaults. Wait for analysis to complete.
+1. Install if needed: `sudo apt update && sudo apt install ghidra -y`
+2. New Project → **Import File** → select `vault` → accept defaults.
+3. Double-click `vault` to open the Code Browser → **Analyze** → Yes → accept defaults.
 
 **Tasks:**
-
-1. Open the **Symbol Tree** panel (left side). Expand `Functions`.
-   - Navigate to `main`. Read the decompiled C code in the **Decompiler** panel.
-   - Navigate to `xor_decode`. Read its decompiled code.
-
-2. Answer these questions about `xor_decode`:
-   - How many parameters does it take?
-   - What operation does it perform on each byte? (Look for `^` in the decompiler output.)
+1. **Symbol Tree → Functions** → open `main` and `xor_decode` in the **Decompiler** panel.
+2. About `xor_decode`:
+   - How many parameters does it take? What operation does it perform on each byte (look for `^`)?
    - What are the parameters named in Ghidra?
 
-   > **Note:** Because the binary was compiled without full debug symbols, Ghidra won't know the original variable names. Instead of `out`, `enc`, `len`, and `key`, you'll see generic names like `param_1`, `param_2`, `param_3`, and `param_4`. This is completely normal in real-world RE — your job is to figure out what each parameter *does* by reading the logic. Trace the XOR operation: which parameter is being written to? Which is being read from? Which is the single-byte constant?
+   > **Note:** Without debug symbols, Ghidra uses generic names (`param_1`…`param_4`) instead of `out`, `enc`, `len`, `key`. That's normal RE — figure out what each parameter *does*. Trace the XOR: which parameter is written to? read from? which is the single-byte constant?
 
-3. Back in `main`, find the call to `xor_decode`. It will look like this:
+3. In `main`, find the call to `xor_decode`. It looks like:
    ```
    xor_decode(local_68, &local_28, 0x1a, 0x42);
    ```
    - What is the fourth argument? That's your key.
-   - Notice that the encoded bytes are **not** a clean array — they're stored as large integer chunks across several stack variables (`local_28`, `uStack_1f`, `uStack_18`, etc.) right above the `xor_decode` call. This is normal. Rather than manually parsing those integers, use your `objdump -d vault` output from Phase 2 to recover the raw encoded bytes — they're in the `movabs` instructions just before the `xor_decode` call.
-
-4. Once you have the encoded bytes and the key:
-   - XOR each byte with the key.
-   - The result is your flag.
+   - The encoded bytes are stored as large integer chunks across several stack variables (`local_28`, `uStack_1f`, …) just above the call. Rather than parse those by hand, recover the raw bytes from the `movabs` instructions in your Phase 2 `objdump` output.
+4. XOR each encoded byte with the key. The result is your flag.
 
 <details>
-<summary>Hint — Decode Script (only open after you've found the key and bytes yourself)</summary>
+<summary>Decode script (open only after you've found the key and bytes yourself)</summary>
 
-Create a file called `decode.py`:
-```bash
-nano decode.py
-```
-
+Create `decode.py`:
 ```python
 enc = [0x01,0x16,0x04,0x39,0x25,0x2a,0x73,0x26,
        0x30,0x23,0x1d,0x73,0x31,0x1d,0x3b,0x72,
@@ -162,11 +217,7 @@ enc = [0x01,0x16,0x04,0x39,0x25,0x2a,0x73,0x26,
 key = 0x42
 print(''.join(chr(b ^ key) for b in enc))
 ```
-
-Save with `Ctrl+O` → Enter → `Ctrl+X`, then run:
-```bash
-python3 decode.py
-```
+Run it: `python3 decode.py`
 
 </details>
 
@@ -174,7 +225,7 @@ python3 decode.py
 
 ## Submission
 
-Once you've decoded the flag, enter it below (include the full `CTF{...}` format):
+Enter the flag (include the full `CTF{...}` format):
 
 **Flag:** `CTF{_______________________}`
 
@@ -187,61 +238,48 @@ Once you've decoded the flag, enter it below (include the full `CTF{...}` format
 <details>
 <summary>Hint 1 — What does <code>strings</code> reveal?</summary>
 
-Look at the function names visible in `strings vault`. One of them is not a standard C library function. What could a function called `xor_decode` possibly be doing?
+Look at the function names in `strings vault`. One isn't a standard C library function. What could a function called `xor_decode` be doing?
 
 </details>
 
 <details>
 <summary>Hint 2 — Finding the key in objdump</summary>
 
-In `objdump -d vault`, search for the call to `xor_decode`. Right before the call, there's a `mov` instruction loading a value into `%ecx`. That value is your XOR key.
+In `objdump -d vault`, search for the call to `xor_decode`. Right before it, a `mov` instruction loads a value into `%ecx`. That value is your XOR key.
 
 </details>
 
 <details>
 <summary>Hint 3 — Decoding in Ghidra</summary>
 
-In Ghidra's decompiler view of `xor_decode`, look for the `^` operator — that's XOR. The fourth parameter (`param_4`) is the key, and the second (`param_2`) is the encoded byte array. In `main`, find the call to `xor_decode` and look at what's passed as `param_4` — that's your key. Collect the encoded bytes, XOR each one with the key, and convert to ASCII.
+In the decompiler view of `xor_decode`, the `^` operator is XOR. `param_4` is the key; `param_2` is the encoded byte array. In `main`, the call shows the key as the fourth argument. Collect the encoded bytes, XOR each with the key, convert to ASCII.
 
-Here is how the math works. For each encoded byte, XOR it with the key to get its ASCII value, then look up the character:
+For each encoded byte, XOR with the key to get its ASCII value:
 
 ```
-Encoded byte   ^   Key     =   ASCII (hex)   =   ASCII (dec)   =   Character
------------------------------------------------------------------------------
-0x01           ^   0x42   =   0x43           =   67            =   'C'
-0x16           ^   0x42   =   0x54           =   84            =   'T'
-0x04           ^   0x42   =   0x46           =   70            =   'F'
+Encoded   ^   Key    =   ASCII (hex)   =   Character
+----------------------------------------------------
+0x01      ^   0x42   =   0x43          =   'C'
+0x16      ^   0x42   =   0x54          =   'T'
+0x04      ^   0x42   =   0x46          =   'F'
 ```
 
-Continue the same operation for all 26 bytes and the characters concatenated together form the flag.
+Continue for all 26 bytes; the characters concatenated form the flag.
 
 </details>
 
 <details>
 <summary>Hint 4 — The XOR math explained</summary>
 
-The encoded bytes were produced by taking each character of the original flag, looking up its ASCII value, and XORing it with the key `0x42`. Here is how the first three bytes were computed:
+The encoded bytes were made by XORing each flag character's ASCII value with key `0x42`:
 
 ```
-Flag char   ASCII (hex)   Key      Encoded byte
--------------------------------------------------
-'C'       = 0x43        ^ 0x42  = 0x01
-'T'       = 0x54        ^ 0x42  = 0x16
-'F'       = 0x46        ^ 0x42  = 0x04
+'C' = 0x43 ^ 0x42 = 0x01
+'T' = 0x54 ^ 0x42 = 0x16
+'F' = 0x46 ^ 0x42 = 0x04
 ```
 
-Those encoded bytes — `0x01, 0x16, 0x04` — are exactly what got baked into the binary and what you see in the `movabs` instructions in `objdump`.
-
-To decode, XOR each encoded byte with the same key and you get the original ASCII value back:
-
-```
-0x01 ^ 0x42 = 0x43 = 'C'
-0x16 ^ 0x42 = 0x54 = 'T'
-0x04 ^ 0x42 = 0x46 = 'F'
-... and so on for all 26 bytes
-```
-
-This works because XOR is its own inverse — if `A ^ B = C`, then `C ^ B = A`.
+To decode, XOR each encoded byte with the same key — XOR is its own inverse, so `C ^ B = A` whenever `A ^ B = C`.
 
 </details>
 
@@ -250,13 +288,49 @@ This works because XOR is its own inverse — if `A ^ B = C`, then `C ^ B = A`.
 ## Key Concepts Practiced
 
 - **Static analysis** — examining a binary without running it
-- **ELF binary structure** — understanding file type, architecture, sections
+- **ELF binary structure** — file type, architecture, sections
 - **Strings extraction** — finding embedded data in binaries
-- **Disassembly** — reading x86-64 assembly language
-- **XOR encoding** — a simple but common obfuscation technique in CTF and malware
+- **Disassembly** — reading x86-64 assembly
+- **XOR encoding** — a common obfuscation technique in CTF and malware
 - **Decompilation with Ghidra** — recovering high-level logic from machine code
+
+---
+
+## Common Pitfalls
+
+- **Running the binary first.** Static analysis before execution — always, and in a VM.
+- **Giving up when `strings` shows no flag.** That absence *is* the clue — something is encoding it.
+- **Fighting Ghidra's generic names.** `param_1`/`local_28` are normal on stripped binaries. Read the logic; rename variables as you identify them.
+- **Mixing up the key and the data.** In the decode loop, the byte every iteration XORs against is the key; the buffer it walks through is the data.
+- **Endianness by hand.** Bytes inside `movabs`/stack stores are little-endian (reversed). Let Ghidra normalize them, or reverse carefully.
+
+---
+
+## Wrap-up & What's Next
+
+**Recap:**
+1. RE is understanding a binary without its source — start static, stay in a VM.
+2. Escalate through the tools: `file`/`strings` → `objdump` → Ghidra.
+3. A kept function name is a breadcrumb; XOR-with-a-nearby-key is the classic beginner trick.
+
+**Next session (Digital Forensics):** recovering hidden and deleted data from files, disks, and metadata.
+
+**Before then:**
+1. Practice RE on [picoCTF](https://picoctf.org) — the Reverse Engineering track starts gentle and ramps up.
+2. Try [crackmes.one](https://crackmes.one) — a huge library of small "crack me" binaries; filter to beginner.
+3. **Stretch:** re-open the Vault in Ghidra and rename variables as you identify them.
+
+---
+
+## Resources
+
+- **[Ghidra](https://ghidra-sre.org)** — the free decompiler used in this session.
+- **[picoCTF](https://picoctf.org)** — beginner-friendly Reverse Engineering practice.
+- **[crackmes.one](https://crackmes.one)** — graded reverse-engineering practice binaries.
+- **[Compiler Explorer (godbolt.org)](https://godbolt.org)** — see how C source maps to assembly, in reverse.
 
 ---
 
 *Prepared by Coach Josh Brunty*
 *Contact: [josh.brunty@marshall.edu](mailto:josh.brunty@marshall.edu) | [coachbrunty@uscybergames.org](mailto:coachbrunty@uscybergames.org)*
+*CTF Training Series*
