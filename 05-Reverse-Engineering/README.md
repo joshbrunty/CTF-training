@@ -1,5 +1,5 @@
 # RE-01: Vault
-**Category:** Reverse Engineering | **Difficulty:** Beginner | **Flag Format:** `MU{...}`
+**Category:** Reverse Engineering | **Difficulty:** Beginner | **Flag Format:** `CTF{...}`
 
 ---
 
@@ -57,7 +57,7 @@ Work through these phases in order. **Do not skip ahead** — each phase builds 
    - Does the flag appear directly? Why or why not?
    - What function names or library calls can you spot?
 
-3. Run `strings vault | grep -i "flag\|MU{\|password\|secret"` — what do you find?
+3. Run `strings vault | grep -i "flag\|CTF{\|password\|secret"` — what do you find?
 
    You should see something like:
    ```
@@ -65,7 +65,7 @@ Work through these phases in order. **Do not skip ahead** — each phase builds 
    Enter the vault password:
    [+] Flag: %s
    ```
-   On Kali, `grep` will highlight the matched terms in red — that's normal. Notice that `MU{` returns no match. What does that tell you about the flag?
+   On Kali, `grep` will highlight the matched terms in red — that's normal. Notice that `CTF{` returns no match. What does that tell you about the flag?
 
 **Answer these before moving on:**
 - [ ] What is the binary type and architecture?
@@ -137,7 +137,7 @@ Work through these phases in order. **Do not skip ahead** — each phase builds 
 
 3. Back in `main`, find the call to `xor_decode`. It will look like this:
    ```
-   xor_decode(local_68, &local_28, 0x19, 0x42);
+   xor_decode(local_68, &local_28, 0x1a, 0x42);
    ```
    - What is the fourth argument? That's your key.
    - Notice that the encoded bytes are **not** a clean array — they're stored as large integer chunks across several stack variables (`local_28`, `uStack_1f`, `uStack_18`, etc.) right above the `xor_decode` call. This is normal. Rather than manually parsing those integers, use your `objdump -d vault` output from Phase 2 to recover the raw encoded bytes — they're in the `movabs` instructions just before the `xor_decode` call.
@@ -155,9 +155,10 @@ nano decode.py
 ```
 
 ```python
-enc = [0x0f,0x17,0x39,0x25,0x2a,0x73,0x26,0x30,
-       0x23,0x1d,0x73,0x31,0x1d,0x3b,0x72,0x37,
-       0x30,0x1d,0x24,0x30,0x73,0x71,0x2c,0x26,0x3f]
+enc = [0x01,0x16,0x04,0x39,0x25,0x2a,0x73,0x26,
+       0x30,0x23,0x1d,0x73,0x31,0x1d,0x3b,0x72,
+       0x37,0x30,0x1d,0x24,0x30,0x73,0x71,0x2c,
+       0x26,0x3f]
 key = 0x42
 print(''.join(chr(b ^ key) for b in enc))
 ```
@@ -173,9 +174,9 @@ python3 decode.py
 
 ## Submission
 
-Once you've decoded the flag, enter it below (include the full `MU{...}` format):
+Once you've decoded the flag, enter it below (include the full `CTF{...}` format):
 
-**Flag:** `MU{_______________________}`
+**Flag:** `CTF{_______________________}`
 
 ---
 
@@ -207,12 +208,12 @@ Here is how the math works. For each encoded byte, XOR it with the key to get it
 ```
 Encoded byte   ^   Key     =   ASCII (hex)   =   ASCII (dec)   =   Character
 -----------------------------------------------------------------------------
-0x0f           ^   0x42   =   0x4d           =   77            =   'M'
-0x17           ^   0x42   =   0x55           =   85            =   'U'
-0x39           ^   0x42   =   0x7b           =   123           =   '{'
+0x01           ^   0x42   =   0x43           =   67            =   'C'
+0x16           ^   0x42   =   0x54           =   84            =   'T'
+0x04           ^   0x42   =   0x46           =   70            =   'F'
 ```
 
-Continue the same operation for all 25 bytes and the characters concatenated together form the flag.
+Continue the same operation for all 26 bytes and the characters concatenated together form the flag.
 
 </details>
 
@@ -224,20 +225,20 @@ The encoded bytes were produced by taking each character of the original flag, l
 ```
 Flag char   ASCII (hex)   Key      Encoded byte
 -------------------------------------------------
-'M'       = 0x4d        ^ 0x42  = 0x0f
-'U'       = 0x55        ^ 0x42  = 0x17
-'{'       = 0x7b        ^ 0x42  = 0x39
+'C'       = 0x43        ^ 0x42  = 0x01
+'T'       = 0x54        ^ 0x42  = 0x16
+'F'       = 0x46        ^ 0x42  = 0x04
 ```
 
-Those encoded bytes — `0x0f, 0x17, 0x39` — are exactly what got baked into the binary and what you see in the `movabs` instructions in `objdump`.
+Those encoded bytes — `0x01, 0x16, 0x04` — are exactly what got baked into the binary and what you see in the `movabs` instructions in `objdump`.
 
 To decode, XOR each encoded byte with the same key and you get the original ASCII value back:
 
 ```
-0x0f ^ 0x42 = 0x4d = 'M'
-0x17 ^ 0x42 = 0x55 = 'U'
-0x39 ^ 0x42 = 0x7b = '{'
-... and so on for all 25 bytes
+0x01 ^ 0x42 = 0x43 = 'C'
+0x16 ^ 0x42 = 0x54 = 'T'
+0x04 ^ 0x42 = 0x46 = 'F'
+... and so on for all 26 bytes
 ```
 
 This works because XOR is its own inverse — if `A ^ B = C`, then `C ^ B = A`.
@@ -257,5 +258,5 @@ This works because XOR is its own inverse — if `A ^ B = C`, then `C ^ B = A`.
 
 ---
 
-*Prepared by Coach Josh Brunty
+*Prepared by Coach Josh Brunty*
 *Contact: [josh.brunty@marshall.edu](mailto:josh.brunty@marshall.edu) | [coachbrunty@uscybergames.org](mailto:coachbrunty@uscybergames.org)*
