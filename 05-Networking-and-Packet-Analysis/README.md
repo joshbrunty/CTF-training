@@ -147,9 +147,9 @@ Incident responders pulled three packet captures off a network after a suspected
 
 | File | Challenge | Difficulty |
 |---|---|---|
-| [`creds.pcap`](https://github.com/joshbrunty/CTF-training/blob/main/5-Networking-and-Packet-Analysis/creds.pcap) | 1 — Cleartext Credentials | Easy–Intermediate |
-| [`download.pcap`](https://github.com/joshbrunty/CTF-training/blob/main/5-Networking-and-Packet-Analysis/download.pcap) | 2 — File Recovery | Intermediate |
-| [`icmp.pcap`](https://github.com/joshbrunty/CTF-training/blob/main/5-Networking-and-Packet-Analysis/icmp.pcap) | 3 — Covert Channel | Intermediate–Hard |
+| [`creds.pcap`](https://github.com/joshbrunty/CTF-training/blob/main/05-Networking-and-Packet-Analysis/creds.pcap) | 1 — Cleartext Credentials | Easy–Intermediate |
+| [`download.pcap`](https://github.com/joshbrunty/CTF-training/blob/main/05-Networking-and-Packet-Analysis/download.pcap) | 2 — File Recovery | Intermediate |
+| [`icmp.pcap`](https://github.com/joshbrunty/CTF-training/blob/main/05-Networking-and-Packet-Analysis/icmp.pcap) | 3 — Covert Channel | Intermediate–Hard |
 
 ---
 
