@@ -118,14 +118,13 @@ The binary is named `vault`. It runs on Linux (64-bit).
 > *"The answer is already inside..."*
 
 ## Files Provided
-
+ 
 | File | Description |
 |---|---|
-| [`vault`](./07-Reverse-Engineering/vault) | The challenge binary (ELF 64-bit, Linux x86-64) |
-
+| [`vault`](https://github.com/joshbrunty/CTF-training/raw/main/07-Reverse-Engineering/vault) | The challenge binary (ELF 64-bit, Linux x86-64) — click to download |
+ 
 > After downloading, make it runnable: `chmod +x vault`. (You don't actually need to *run* it to solve it — static analysis first.)
-
----
+ 
 
 ## Roadmap
 
