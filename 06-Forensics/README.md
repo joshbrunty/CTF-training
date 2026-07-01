@@ -123,6 +123,8 @@ istat disk.img <inode>     # metadata for one file
  
 A memory dump is a snapshot of RAM — it holds running processes, command lines, environment variables, and passwords the disk never sees. The deep tool is **Volatility**, but your everyday `strings memory.raw | grep …` gets a long way. Watch for decoys.
  
+> Want the full Volatility workflow? See the **[optional memory-forensics lab](#-optional-extra-practice--memory-forensics-with-volatility)** at the end of this README.
+ 
 ---
  
 ## The Forensics Workflow
@@ -237,6 +239,60 @@ In **Autopsy**: add `case001.dd` as a data source, open the volume's file list, 
 </details>
 ---
  
+## 🧠 Optional Extra Practice — Memory Forensics with Volatility
+ 
+*Advanced · bonus · for fast finishers. Best attempted after the four artifacts above.*
+ 
+Challenge 4 warmed you up on a RAM capture with `strings`. This optional lab does the real thing — full **memory forensics** with **[Volatility](https://www.volatilityfoundation.org/)**, the industry standard for analyzing RAM.
+ 
+> **Attribution:** adapted from **MemLabs — Lab 3, "The Evil's Den,"** by **P. Abhiram Kumar ([@stuxnet999](https://github.com/stuxnet999/MemLabs))**. The scenario and worksheet here are rewritten for this course; the memory image is the original from MemLabs — please credit the author and use the original link below.
+ 
+**Scenario.** A workstation "started acting weird," and a **RAM capture** was taken before it was wiped. The user's account: *"Some script scrambled a text file I care about — now it's just gibberish. And I think whoever did it left a picture on the desktop that doesn't belong."* Recover the secret: a single flag in **two halves**, where the **first half unlocks the second**.
+ 
+**Setup**
+- **Volatility** — on Kali: `sudo apt install volatility3` (command `vol`; may be `vol.py` / `volatility3`). Classic **Volatility 2** also works and is what most references use.
+- **steghide** — `sudo apt install steghide`.
+- **The image** `MemoryDump_Lab3.raw` (~1 GB) is **not stored in this repo**. Download it from the [MemLabs Lab 3 page](https://github.com/stuxnet999/MemLabs), or get it from your instructor on the lab network.
+**Work the phases in order:**
+ 
+1. **Identify** the image — what OS/build is it? *(Volatility 3 auto-detects; Volatility 2 needs a profile.)*
+2. **Processes → command lines.** List the processes, then read their command lines. One everyday Windows app was opened **twice**, each time with a Desktop file — one a `.py` script, one a `.txt`. Note both.
+3. **Recover the first half.** Dump both files out of memory. The **script** shows *how* the text was scrambled — an **XOR + Base64** chain (straight from the Crypto session). Reverse those steps on the **scrambled file** to get the first fragment.
+4. **Recover the second half.** Find and dump the suspicious **image**, then look inside it with `steghide`. **The passphrase is the first fragment you just recovered — use it exactly as it appears.** `steghide` writes a small file containing the second fragment.
+5. **Assemble & submit.**
+> **Flag-format note:** this is a real-world image whose *internal* secret uses a different wrapper. Recover the full content and submit it as **`CTF{...}`** (same characters, our wrapper). Use the recovered fragment **verbatim** for the Phase 4 passphrase — only the final answer gets re-wrapped.
+ 
+**Submission:** `CTF{________________________}`
+ 
+<details>
+<summary>Hints — Volatility commands</summary>
+```bash
+# 1) identify the image
+vol -f MemoryDump_Lab3.raw windows.info          # Volatility 3
+volatility -f MemoryDump_Lab3.raw imageinfo      # Volatility 2 -> use the suggested Win7 x86 profile
+ 
+# 2) processes + command lines
+vol -f MemoryDump_Lab3.raw windows.pstree
+vol -f MemoryDump_Lab3.raw windows.cmdline       # Vol2: --profile=<profile> pslist / cmdline
+#   -> notepad.exe opened  ...\Desktop\evilscript.py  and  ...\Desktop\vip.txt
+ 
+# 3) dump both files, then reverse the script's XOR+Base64 on the scrambled file
+vol -f MemoryDump_Lab3.raw windows.filescan | grep -Ei "evilscript|vip.txt"
+vol -f MemoryDump_Lab3.raw -o . windows.dumpfiles --virtaddr <offset>
+#   the script XORs each char with a small number, then Base64-encodes.
+#   to reverse -> Base64-decode, then XOR each byte with the same number (a few lines of Python)
+ 
+# 4) dump the suspicious .jpeg, then steghide with the first fragment as the passphrase
+vol -f MemoryDump_Lab3.raw windows.filescan | grep -i ".jpeg"
+#   ...dumpfiles on its offset (as above)...
+steghide extract -sf <dumped>.jpeg -p '<first-fragment-verbatim>'
+cat 'secret text'
+```
+Carving the JPEG with `foremost`/`binwalk` **won't** work here — it's fragmented across memory pages, so `steghide` rejects the bytes. Use Volatility's `dumpfiles`, which reconstructs the real file.
+ 
+</details>
+---
+ 
 ## Common Pitfalls
  
 - **Trusting the extension.** `file` and `xxd` tell you what something *really* is.
@@ -254,6 +310,7 @@ In **Autopsy**: add `case001.dd` as a data source, open the volume's file list, 
 - **Deleted-file recovery** — The Sleuth Kit (`fls`/`icat`) and Autopsy
 - **File carving** — recovering embedded/appended files
 - **Memory artifacts** — pulling secrets from a raw dump
+- **Memory forensics with Volatility** *(optional)* — process/command-line/file analysis of a RAM image
 ---
  
 ## Wrap-up & What's Next
