@@ -205,7 +205,7 @@ A raw memory capture. The **obvious** flag is bait; the real one is encoded. `st
 | 1 — Metadata | `CTF{________________}` |
 | 2 — Carving | `CTF{________________}` |
 | 3 — Deleted-File Recovery | `CTF{________________}` |
-| 4 — Memory (bonus) | `CTF{________________}` |
+| 4 — Memory (bonus) | `inCTF{________________}` |
  
 ---
  
@@ -260,9 +260,9 @@ Challenge 4 warmed you up on a RAM capture with `strings`. This optional lab doe
 3. **Recover the first half.** Dump both files out of memory. The **script** shows *how* the text was scrambled — an **XOR + Base64** chain (straight from the Crypto session). Reverse those steps on the **scrambled file** to get the first fragment.
 4. **Recover the second half.** Find and dump the suspicious **image**, then look inside it with `steghide`. **The passphrase is the first fragment you just recovered — use it exactly as it appears.** `steghide` writes a small file containing the second fragment.
 5. **Assemble & submit.**
-> **Flag-format note:** this is a real-world image whose *internal* secret uses a different wrapper. Recover the full content and submit it as **`CTF{...}`** (same characters, our wrapper). Use the recovered fragment **verbatim** for the Phase 4 passphrase — only the final answer gets re-wrapped.
+> **Flag-format note:** this is a real-world image whose *internal* secret uses a slightly different wrapper. Recover the full content and submit it as **`inCTF{...}`** (same characters, different wrapper).
  
-**Submission:** `CTF{________________________}`
+**Submission:** `inCTF{________________________}`
  
 <details>
 <summary>Hints — Volatility commands</summary>
