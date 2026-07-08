@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="assets/CTF-logo.png">
-    <img src="assets/CTF-logo.png" alt="CTF Training Logo" width="400">
+    <img src="tree/main/assets/CTF-logo.png" alt="CTF Training Logo" width="400">
   </a>
 </p>
  
