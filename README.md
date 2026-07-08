@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="assets/CTF-logo.png">
-    <img src="tree/main/assets/CTF-logo.png" alt="CTF Training Logo" width="400">
+    <img src="https://github.com/joshbrunty/CTF-training/blob/main/assets/CTF-logo.PNG" alt="CTF Training Logo" width="400">
   </a>
 </p>
  
