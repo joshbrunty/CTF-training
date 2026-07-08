@@ -1,7 +1,9 @@
 # CTF Training
 
 <p align="center">
-  <img src="assets/CTF-logo.png" alt="CTF Training Logo" width="350">
+  <a href="assets/CTF-logo.png">
+    <img src="assets/CTF-logo.png" alt="CTF Training Logo" width="400">
+  </a>
 </p>
  
 A hands-on, **8-part Capture the Flag (CTF) curriculum** that takes participants from *"what's a flag?"* to competing as a team under a clock. Built for the **United States & Marshall University Cyber Team** and delivered as an intensive summer institute at the **University of Prishtina (Kosovo)**, every module pairs a plain-language lesson with self-contained, verified challenges — so you learn a technique and immediately use it.
