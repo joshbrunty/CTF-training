@@ -72,6 +72,27 @@ A hash turns any input into a fixed-length fingerprint. You **cannot** reverse i
    - `john` or `hashcat` with the `rockyou.txt` wordlist for offline cracking.
 3. **Salts** defeat lookups: a salted hash must be cracked, not looked up. Real CTFs lean on *weak* or *unsalted* hashes — that's the point.
 
+#### First, set up the `rockyou` wordlist (one-time)
+
+On Kali, `rockyou.txt` ships **compressed** as `rockyou.txt.gz` — you must decompress it once before John can use it. (If you point John at the `.gz`, it reads the compressed bytes as garbage and cracks nothing — you'll see a `UTF-16 BOM` warning and `0g`.)
+
+**Easiest way — decompress it in place.** This needs `sudo`, because `/usr/share/wordlists/` is a system folder owned by root:
+```bash
+sudo gunzip /usr/share/wordlists/rockyou.txt.gz
+```
+That swaps the `.gz` for a plain `rockyou.txt` at the standard path, and you only ever do it once. Confirm it worked:
+```bash
+ls -lh /usr/share/wordlists/rockyou.txt      # ~136 MB, ~14 million passwords
+```
+
+> **Got `Permission denied`, or don't want to use `sudo`?** That's the error you hit if you drop the `sudo`. Instead, decompress a **copy into your home folder** — no root needed, and it leaves the original untouched:
+> ```bash
+> zcat /usr/share/wordlists/rockyou.txt.gz > ~/rockyou.txt
+> ```
+> Then just use `~/rockyou.txt` anywhere a command says `/usr/share/wordlists/rockyou.txt`. (This is what to do if `sudo gunzip` won't cooperate — no need to move files to your Desktop.)
+
+#### Now identify and crack
+
 ```bash
 # identify
 hashid 0d107d09f5bbe40cade3de5c71e9e9b7
@@ -79,7 +100,12 @@ hashid 0d107d09f5bbe40cade3de5c71e9e9b7
 # crack with John + rockyou
 echo '0d107d09f5bbe40cade3de5c71e9e9b7' > hash.txt
 john --format=raw-md5 --wordlist=/usr/share/wordlists/rockyou.txt hash.txt
+
+# re-display the cracked password any time (reads John's saved results):
+john --show --format=raw-md5 hash.txt
 ```
+
+> **Reading John's output** — the cracked password prints **inline the moment it's found**: a highlighted word followed by `(?)` (the `?` just means "no username," which is normal for a bare hash). In the summary line, `1g` = *one hash cracked*, `0g` = none. The `Warning: no OpenMP support ... consider --fork=2` line is a **speed note, not an error** — you can ignore it. If you scrolled past the result, `john --show` above prints it again.
 
 ---
 
