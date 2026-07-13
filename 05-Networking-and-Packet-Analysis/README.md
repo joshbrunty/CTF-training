@@ -38,8 +38,8 @@ By the end of this lab, you will be able to:
 | [`creds.pcap`](https://github.com/joshbrunty/CTF-training/raw/main/05-Networking-and-Packet-Analysis/creds.pcap) | 1 — Cleartext Credentials | A — Analysis | Easy–Intermediate |
 | [`download.pcap`](https://github.com/joshbrunty/CTF-training/raw/main/05-Networking-and-Packet-Analysis/download.pcap) | 2 — File Recovery | A — Analysis | Intermediate |
 | [`icmp.pcap`](https://github.com/joshbrunty/CTF-training/raw/main/05-Networking-and-Packet-Analysis/icmp.pcap) | 3 — Covert Channel | A — Analysis | Intermediate–Hard |
-| `packet_decode.pcap` | 4 — Two Halves | B — Decode | Easy |
-| `packet_decode2.pcap` | 5 — Handshake + Payload | B — Decode | Intermediate |
+| [`packet_decode.pcap`](https://github.com/joshbrunty/CTF-training/raw/main/05-Networking-and-Packet-Analysis/packet_decode.pcap) | 4 — Two Halves | B — Decode | Easy |
+| [`packet_decode2.pcap`](https://github.com/joshbrunty/CTF-training/raw/main/05-Networking-and-Packet-Analysis/packet_decode2.pcap) | 5 — Handshake + Payload | B — Decode | Intermediate |
 
 > Open each in Wireshark, or read it with `tcpdump -r <file> -A`, in your Kali VM.
 
