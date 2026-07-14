@@ -8,7 +8,7 @@
  
 A hands-on, **8-part Capture the Flag (CTF) curriculum** that takes participants from *"what's a flag?"* to competing as a team under a clock. Built for the **United States & Marshall University Cyber Team** and delivered as an intensive summer institute at the **University of Prishtina (Kosovo)**, every module pairs a plain-language lesson with self-contained, verified challenges — so you learn a technique and immediately use it.
  
-The curriculum builds the skills that place in the **[National Cyber League (NCL)](https://nationalcyberleague.org)**, **[US Cyber Games](https://www.uscybergames.com)**, and collegiate CTFs — the same techniques you'll use on game day and on the job in digital forensics and incident response.
+The curriculum builds the skills that you will see **[National Cyber League (NCL)](https://nationalcyberleague.org)**, **[US Cyber Games](https://www.uscybergames.com)**, and collegiate CTFs — the same techniques you'll use on game day and on the job in digital forensics and incident response.
  
 ---
  
