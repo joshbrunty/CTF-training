@@ -74,7 +74,7 @@ A hash turns any input into a fixed-length fingerprint. You **cannot** reverse i
 
 #### First, set up the `rockyou` wordlist (one-time)
 
-On Kali, `rockyou.txt` ships **compressed** as `rockyou.txt.gz` — you must decompress it once before John can use it. (If you point John at the `.gz`, it reads the compressed bytes as garbage and cracks nothing — you'll see a `UTF-16 BOM` warning and `0g`.)
+On Kali, `rockyou.txt` ships **compressed** as `rockyou.txt.gz` — you must decompress it once before John or hashcat can use it. (If you point either tool at the `.gz`, it reads the compressed bytes as garbage and cracks nothing.)
 
 **Easiest way — decompress it in place.** This needs `sudo`, because `/usr/share/wordlists/` is a system folder owned by root:
 ```bash
@@ -106,6 +106,28 @@ john --show --format=raw-md5 hash.txt
 ```
 
 > **Reading John's output** — the cracked password prints **inline the moment it's found**: a highlighted word followed by `(?)` (the `?` just means "no username," which is normal for a bare hash). In the summary line, `1g` = *one hash cracked*, `0g` = none. The `Warning: no OpenMP support ... consider --fork=2` line is a **speed note, not an error** — you can ignore it. If you scrolled past the result, `john --show` above prints it again.
+
+#### Or crack it with hashcat
+
+`hashcat` does the same job as John but is built for **GPU speed**. For MD5 the hash-mode is `-m 0`, and a straight wordlist attack is `-a 0`:
+
+```bash
+# crack with hashcat + rockyou
+hashcat -m 0 -a 0 hash.txt /usr/share/wordlists/rockyou.txt
+
+# re-display the cracked password any time (reads hashcat's "potfile"):
+hashcat -m 0 hash.txt --show
+```
+
+> **Running Kali in a VM (no GPU)?** hashcat may stop with `No devices found/left` or an OpenCL error — it wants a GPU. Add `--force` to run on the **CPU** instead:
+> ```bash
+> hashcat -m 0 -a 0 hash.txt /usr/share/wordlists/rockyou.txt --force
+> ```
+> If it still can't find a device, install the CPU OpenCL driver once: `sudo apt install pocl-opencl-icd`.
+
+> **Reading hashcat's output** — a cracked line appears as `hash:password` (the plaintext is everything after the colon), and the status shows `Status: Cracked`. Results are saved to the potfile, so `--show` re-prints them without re-running. Handy mode numbers: `-m 0` MD5 · `-m 100` SHA-1 · `-m 1400` SHA-256 · `-m 1000` NTLM.
+
+> **John vs. hashcat — which to use?** Either cracks this challenge in a second. **John** is friendlier on a plain CPU / in a VM (no GPU setup) and auto-detects many formats. **hashcat** is much faster *with a real GPU* and is the go-to for big wordlists or mask attacks. Learn both — different boxes and events favor different tools.
 
 ---
 
@@ -243,4 +265,3 @@ This is hex, single-byte XOR'd. There are only 256 possible keys — brute-force
 ---
 
 *CTF Training Series*
-
