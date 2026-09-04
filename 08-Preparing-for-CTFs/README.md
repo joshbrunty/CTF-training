@@ -1,4 +1,4 @@
-# Competing in CTFs — Formats, Scoring, Teams & AI
+# Preparing for and competing in CTFs — Formats, Scoring, Teams & AI
 
 **CTF Training Series**
 **Level:** All levels — this is the capstone. There's no new tool to learn here; the skill is turning seven modules' worth of ability into points on a board, alone or as a team, under a clock.
